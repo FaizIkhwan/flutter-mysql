@@ -4,14 +4,29 @@
 //
 
 import 'package:flutter/material.dart';
-import 'edit_profile.dart';
+import 'package:hello_world/utils/NavigatorHelper.dart';
+import 'dart:async';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
+
+  final String realname;
+  final String username;
+
+  HomePage(this.username, this.realname);
+
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState(this.username, this.realname);
+
 }
 
 class _HomePageState extends State<HomePage> {
+
+  final String realname;
+  final String username;
+
+  _HomePageState(this.username, this.realname);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,21 +42,19 @@ class _HomePageState extends State<HomePage> {
 
               Text("Welcome"),
 
-              Text("NAME"),
+              Text(realname),
 
               RaisedButton(
                 child: Text("Edit profile information"),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => EditProfile()),
-                  );
+                  NavigatorHelper.goToEditProfile(context, username);
                 },
               ),
 
               RaisedButton(
                 child: Text("Delete account"),
                 onPressed: () {
-                  // DELETE ACCOUNT
+                  deleteAccount(username);
                 },
               ),
 
@@ -51,4 +64,13 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+  Future<void> deleteAccount(String username) async {
+    final response = await http.post("http://35.197.148.177/deleteaccount.php", body: {
+      "username" : username,
+    });
+
+    NavigatorHelper.goToLogin(context);
+  }
+
 }

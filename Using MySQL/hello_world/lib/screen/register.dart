@@ -4,6 +4,9 @@
 //
 
 import 'package:flutter/material.dart';
+import 'package:hello_world/utils/NavigatorHelper.dart';
+import 'dart:async';
+import 'package:http/http.dart' as http;
 
 class Register extends StatefulWidget {
   @override
@@ -13,7 +16,8 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
 
   TextEditingController usernameController = TextEditingController();
-  TextEditingController realnameController = TextEditingController();
+  TextEditingController firstnameController = TextEditingController();
+  TextEditingController lastnameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
 
@@ -23,6 +27,7 @@ class _RegisterState extends State<Register> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Register"),),
+      resizeToAvoidBottomPadding: false,
       body: Center(
         child: Container(
           margin: EdgeInsets.only(top: 20.0, left: 15.0, right: 15.0),
@@ -48,15 +53,26 @@ class _RegisterState extends State<Register> {
                     ), // end TextFormField Username
 
                     TextFormField(
-                      controller: realnameController,
+                      controller: firstnameController,
                       validator: (String text) {
                         if(text.isEmpty)
-                          return "Real name cannot be empty";
+                          return "First name cannot be empty";
                       },
                       decoration: InputDecoration(
-                        labelText: "Real name",
+                        labelText: "First name",
                       ),
-                    ), // end TextFormField Real name
+                    ), // end TextFormField First name
+
+                    TextFormField(
+                      controller: lastnameController,
+                      validator: (String text) {
+                        if(text.isEmpty)
+                          return "Last name cannot be empty";
+                      },
+                      decoration: InputDecoration(
+                        labelText: "Last name",
+                      ),
+                    ), // end TextFormField Last name
 
                     TextFormField(
                       controller: passwordController,
@@ -87,10 +103,15 @@ class _RegisterState extends State<Register> {
                       onPressed: () {
                         if(formKey.currentState.validate()) {
                           String username = usernameController.text;
-                          String realName = realnameController.text;
+                          String firstname = firstnameController.text;
+                          String lastname = lastnameController.text;
                           String password = passwordController.text;
                           String confirmPassword = confirmPasswordController.text;
-                          // AUTHENTICATION
+
+                          if(password == confirmPassword)
+                            register(username, firstname, lastname, password);
+                          else
+                            _showDialog("Password and confirm password does not match");
                         }
                       },
                     ), // end RaisedButton
@@ -103,4 +124,36 @@ class _RegisterState extends State<Register> {
       ),
     );
   }
+
+  Future<void> register (String username, String  firstname, String  lastname, String  password) async {
+    final response = await http.post("http://35.197.148.177/register.php", body: {
+      "username" : username,
+      "first_name" : firstname,
+      "last_name" : lastname,
+      "password" : password,
+    });
+
+    NavigatorHelper.goToHomepage(context, username, "${firstname} ${lastname}");
+  }
+
+  void _showDialog(String title) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(20.0)),
+          actions: <Widget>[
+            new FlatButton(
+              child: Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }

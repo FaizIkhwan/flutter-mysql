@@ -4,8 +4,10 @@
 //
 
 import 'package:flutter/material.dart';
-import 'homepage.dart';
-import 'register.dart';
+import 'package:hello_world/utils/NavigatorHelper.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class Login extends StatefulWidget {
   @override
@@ -23,6 +25,7 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Login"),),
+      resizeToAvoidBottomPadding: false,
       body: Center(
         child: Container(
           margin: EdgeInsets.only(top: 20.0, left: 15.0, right: 15.0),
@@ -66,11 +69,7 @@ class _LoginState extends State<Login> {
                           String username = usernameController.text;
                           String password = passwordController.text;
 
-                          if(username == "admin" && password == "admin") {
-                            Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => HomePage()),
-                            );
-                          }
+                          login(username, password);
                         }
                       },
                     ), // end RaisedButton
@@ -78,9 +77,7 @@ class _LoginState extends State<Login> {
                     RaisedButton(
                       child: Text("Register"),
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => Register()),
-                        );
+                        NavigatorHelper.goToRegister(context);
                       },
                     ), // end RaisedButton
 
@@ -95,4 +92,45 @@ class _LoginState extends State<Login> {
       ),
     );
   }
+
+  Future<void> login(String username, String password) async{
+    try {
+      final response = await http.post("http://35.197.148.177/loginn.php", body: {
+        "username" : username,
+        "password" : password,
+      });
+
+      var datauser =  json.decode(response.body);
+
+      String u = datauser[0]["username"];
+      String fn = datauser[0]["first_name"];
+      String ln = datauser[0]["last_name"];
+
+      NavigatorHelper.goToHomepage(context, u, "${fn} ${ln}");
+
+    }catch (e) {
+      _showDialog("Login Failed!");
+    }
+  }
+
+  void _showDialog(String title) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(20.0)),
+          actions: <Widget>[
+            new FlatButton(
+              child: Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }
