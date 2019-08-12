@@ -25,6 +25,8 @@ class _HomePageState extends State<HomePage> {
   final String realname;
   final String username;
 
+  String status = "Offline";
+
   _HomePageState(this.username, this.realname);
 
   @override
@@ -43,6 +45,33 @@ class _HomePageState extends State<HomePage> {
               Text("Welcome"),
 
               Text(realname),
+
+              Text(status),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+
+                  RaisedButton(
+                    child: Text("Online"),
+                    onPressed: () {
+                      setState(() {
+                        status = "Online";
+                      });
+                    },
+                  ),
+
+                  RaisedButton(
+                    child: Text("Offline"),
+                    onPressed: () {
+                      setState(() {
+                        status = "Offline";
+                      });
+                    },
+                  ),
+
+                ],
+              ),
 
               RaisedButton(
                 child: Text("Edit profile information"),
