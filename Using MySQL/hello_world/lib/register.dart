@@ -4,7 +4,7 @@
 //
 
 import 'package:flutter/material.dart';
-import 'package:hello_world/utils/NavigatorHelper.dart';
+import 'package:hello_world/homepage.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 
@@ -15,6 +15,7 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
 
+  final String ipAddress = "35.240.250.178";
   TextEditingController usernameController = TextEditingController();
   TextEditingController firstnameController = TextEditingController();
   TextEditingController lastnameController = TextEditingController();
@@ -126,14 +127,17 @@ class _RegisterState extends State<Register> {
   }
 
   Future<void> register (String username, String  firstname, String  lastname, String  password) async {
-    final response = await http.post("http://35.197.148.177/register.php", body: {
+    final response = await http.post("http://${ipAddress}/register.php", body: {
       "username" : username,
       "first_name" : firstname,
       "last_name" : lastname,
       "password" : password,
     });
 
-    NavigatorHelper.goToHomepage(context, username, "${firstname} ${lastname}");
+    String realname = "${firstname} ${lastname}";
+    Navigator.push(context, MaterialPageRoute(
+      builder: (BuildContext context) => HomePage(username, realname),
+    ));
   }
 
   void _showDialog(String title) {

@@ -4,7 +4,7 @@
 //
 
 import 'package:flutter/material.dart';
-import 'package:hello_world/utils/NavigatorHelper.dart';
+import 'package:hello_world/homepage.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -21,6 +21,7 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
 
+  final String ipAddress = "35.240.250.178";
   final String username;
 
   _EditProfileState(this.username);
@@ -107,7 +108,7 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future<void> getInformation(String username) async {
-    final response = await http.post("http://35.197.148.177/getinfo.php", body: {
+    final response = await http.post("http://${ipAddress}/getinfo.php", body: {
       "username" : username,
     });
 
@@ -118,21 +119,24 @@ class _EditProfileState extends State<EditProfile> {
     String ln = datauser[0]["last_name"];
 
     setState(() {
-      firstNameController.text = p;
-      lastNameController.text = fn;
-      passwordController.text = ln;
+      firstNameController.text = fn;
+      lastNameController.text = ln;
+      passwordController.text = p;
     });
   }
 
   Future<void> updateInfo(String username, String firstName, String lastName, String password) async {
-    final response = await http.post("http://35.197.148.177/sendinfo.php", body: {
+    final response = await http.post("http://${ipAddress}/sendinfo.php", body: {
       "username" : username,
       "first_name" : firstName,
       "last_name" : lastName,
       "password" : password,
     });
 
-    NavigatorHelper.goToHomepage(context, username, "${firstName} ${lastName}");
+    var realname = "${firstName} ${lastName}";
+    Navigator.push(context, MaterialPageRoute(
+       builder: (BuildContext context) => HomePage(username, realname)
+    ));
   }
 
 }

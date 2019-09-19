@@ -4,7 +4,8 @@
 //
 
 import 'package:flutter/material.dart';
-import 'package:hello_world/utils/NavigatorHelper.dart';
+import 'package:hello_world/edit_profile.dart';
+import 'package:hello_world/login.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 
@@ -22,6 +23,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+  final String ipAddress = "35.240.250.178";
   final String realname;
   final String username;
 
@@ -76,7 +78,9 @@ class _HomePageState extends State<HomePage> {
               RaisedButton(
                 child: Text("Edit profile information"),
                 onPressed: () {
-                  NavigatorHelper.goToEditProfile(context, username);
+                  Navigator.push(context, MaterialPageRoute(
+                      builder: (context) => EditProfile(username)),
+                  );
                 },
               ),
 
@@ -95,11 +99,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> deleteAccount(String username) async {
-    final response = await http.post("http://35.197.148.177/deleteaccount.php", body: {
+    final response = await http.post("http://${ipAddress}/deleteaccount.php", body: {
       "username" : username,
     });
 
-    NavigatorHelper.goToLogin(context);
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => Login()),
+    );
   }
 
 }

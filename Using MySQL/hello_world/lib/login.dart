@@ -4,7 +4,8 @@
 //
 
 import 'package:flutter/material.dart';
-import 'package:hello_world/utils/NavigatorHelper.dart';
+import 'package:hello_world/register.dart';
+import 'package:hello_world/homepage.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -16,6 +17,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
 
+  final String ipAddress = "35.240.250.178";
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -77,7 +79,9 @@ class _LoginState extends State<Login> {
                     RaisedButton(
                       child: Text("Register"),
                       onPressed: () {
-                        NavigatorHelper.goToRegister(context);
+                        Navigator.push(context, MaterialPageRoute(
+                            builder: (context) => Register()),
+                        );
                       },
                     ), // end RaisedButton
 
@@ -95,7 +99,7 @@ class _LoginState extends State<Login> {
 
   Future<void> login(String username, String password) async{
     try {
-      final response = await http.post("http://35.197.148.177/loginn.php", body: {
+      final response = await http.post("http://${ipAddress}/loginn.php", body: {
         "username" : username,
         "password" : password,
       });
@@ -106,7 +110,10 @@ class _LoginState extends State<Login> {
       String fn = datauser[0]["first_name"];
       String ln = datauser[0]["last_name"];
 
-      NavigatorHelper.goToHomepage(context, u, "${fn} ${ln}");
+      String realname = "${fn} ${ln}";
+      Navigator.push(context, MaterialPageRoute(
+        builder: (BuildContext context) => HomePage(u, realname),
+      ));
 
     }catch (e) {
       _showDialog("Login Failed!");
