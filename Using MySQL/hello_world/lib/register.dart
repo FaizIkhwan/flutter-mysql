@@ -126,7 +126,7 @@ class _RegisterState extends State<Register> {
     );
   }
 
-  Future<void> register (String username, String  firstname, String  lastname, String  password) async {
+  Future<void> register (String username, String firstname, String  lastname, String  password) async {
     final response = await http.post("http://${ipAddress}/register.php", body: {
       "username" : username,
       "first_name" : firstname,

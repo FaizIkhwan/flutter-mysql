@@ -102,7 +102,6 @@ class _HomePageState extends State<HomePage> {
     final response = await http.post("http://${ipAddress}/deleteaccount.php", body: {
       "username" : username,
     });
-
     Navigator.push(context, MaterialPageRoute(
         builder: (context) => Login()),
     );
